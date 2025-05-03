@@ -324,7 +324,7 @@ export default function Signup() {
                 </div>
                 
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium">You're about to create:</h3>
+                  <h3 className="text-sm font-medium">You&apos;re about to create:</h3>
                   <ul className="space-y-2">
                     <li className="flex items-start space-x-2 text-sm">
                       <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
@@ -351,7 +351,7 @@ export default function Signup() {
               <Button 
                 type={step === totalSteps ? 'submit' : 'button'} 
                 className="flex-1"
-                onClick={step < totalSteps ? () => form.trigger(currentFields as any).then(valid => {
+                onClick={step < totalSteps ? () => form.trigger(currentFields as (keyof SignupFormValues)[]).then(valid => {
                   if (valid) nextStep();
                 }) : undefined}
                 disabled={step < totalSteps ? !isCurrentStepValid : isLoading}

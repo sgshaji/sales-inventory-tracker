@@ -1,155 +1,105 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { AuthCard } from '@/components/auth/auth-card';
-import { AuthLogo } from '@/components/auth/auth-logo';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
+  email: z.string().email('Please enter a valid email address'),
 });
 
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
-export default function ForgotPassword() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+export default function ForgotPasswordPage() {
+  const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<ForgotPasswordFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
   });
 
-  function onSubmit(data: ForgotPasswordFormValues) {
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
-    // Simulate API request
-    setTimeout(() => {
-      console.log(data);
-      setIsLoading(false);
-      setIsSuccess(true);
+    setError(null);
+
+    try {
+      // TODO: Implement actual password reset logic
+      console.log('Password reset data:', data);
       toast({
-        title: 'Reset link sent',
-        description: 'Please check your email for the password reset link.',
+        title: 'Success',
+        description: 'Password reset instructions have been sent to your email.',
       });
-    }, 2000);
-  }
-
-  if (isSuccess) {
-    return (
-      <AuthCard>
-        <div className="space-y-6">
-          <AuthLogo />
-          
-          <div className="flex flex-col items-center justify-center space-y-3 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-              <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-300" />
-            </div>
-            <h1 className="text-2xl font-semibold tracking-tight">Check your inbox</h1>
-            <p className="text-sm text-muted-foreground">
-              We&apos;ve sent you a magic link to reset your password
-            </p>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setIsSuccess(false)}
-          >
-            Back to reset password
-          </Button>
-
-          <div className="text-center text-sm">
-            <Link
-              to="/login"
-              className="inline-flex items-center text-sm text-[#3E6AE1] hover:underline"
-            >
-              <ArrowLeft className="mr-1 h-3 w-3" />
-              Back to sign in
-            </Link>
-          </div>
-        </div>
-      </AuthCard>
-    );
-  }
+      router.push('/auth/login');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while processing your request');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <AuthCard>
-      <div className="space-y-6">
-        <AuthLogo />
-        
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Reset your password</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your email and we&apos;ll send you a link to reset your password
-          </p>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="name@example.com"
-                        className="pl-10"
-                        type="email"
-                        autoComplete="email"
-                        aria-label="Email address"
-                        autoFocus
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Forgot Password</CardTitle>
+          <CardDescription className="text-center">
+            Enter your email address and we'll send you instructions to reset your password
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                {...register('email')}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
-            />
-            
-            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending reset link...
+                  <Mail className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
                 </>
               ) : (
-                'Send reset link'
+                'Send Reset Instructions'
               )}
             </Button>
           </form>
-        </Form>
-
-        <div className="text-center text-sm">
-          <Link
-            to="/login"
-            className="inline-flex items-center text-sm text-muted-foreground hover:underline"
-          >
-            <ArrowLeft className="mr-1 h-3 w-3" />
-            Back to sign in
-          </Link>
-        </div>
-      </div>
-    </AuthCard>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-center text-sm">
+            Remember your password?{' '}
+            <Link href="/auth/login" className="text-primary hover:underline">
+              Sign in
+            </Link>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

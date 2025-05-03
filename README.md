@@ -1,5 +1,5 @@
 # sales-inventory-tracker
-App to track sales and inventory for retailers
+App to track sales and inventory for retailers along with AI insights to opimise sales and inventory
 =======
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

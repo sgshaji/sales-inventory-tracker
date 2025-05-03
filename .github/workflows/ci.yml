@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - name: 🛎️  Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧  Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: 📦  Install deps
+        run: npm ci
+
+      - name: 🔍  Lint
+        run: npm run lint --if-present
+
+      - name: 🧪  Unit + Integration tests
+        run: npm test --if-present
+
+      - name: 🔨  Build type‑checked Next.js
+        run: npm run build

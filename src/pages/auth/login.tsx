@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AuthDivider } from '@/components/auth/auth-divider';
 import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
@@ -111,7 +110,7 @@ export default function LoginPage() {
             </Link>
           </div>
           <div className="text-center text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/signup" className="text-primary hover:underline">
               Sign up
             </Link>

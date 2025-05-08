@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "eslint . --ignore-pattern .next/",
     "clean": "rm -rf .next out node_modules package-lock.json",
     "clean:build": "npm run clean && npm install && npm run build"
   },

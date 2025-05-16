@@ -1,10 +1,13 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
- * Combines Tailwind CSS classes with proper precedence
+ * Combines class names using clsx and tailwind-merge
+ * 
+ * @param {...ClassValue[]} inputs - Class names to combine
+ * @returns {string} Combined and optimized class names string
  */
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: (string | undefined | null | boolean | Record<string, boolean>)[]) {
   return twMerge(clsx(inputs));
 }
 
@@ -32,7 +35,7 @@ export function formatCurrency(amount: number, currency = "USD") {
 /**
  * Creates a debounced function that delays invoking func until after wait milliseconds
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ) {
@@ -60,7 +63,7 @@ export function truncate(str: string, length: number) {
 /**
  * Checks if a value is empty (null, undefined, empty string, empty array, or empty object)
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
   return (
     value === null ||
     value === undefined ||
@@ -93,12 +96,17 @@ export function capitalizeFirst(str: string): string {
 /**
  * Safely access nested object properties
  */
-export function getNestedValue<T>(obj: any, path: string, defaultValue?: T): T {
+export function getNestedValue<T>(obj: Record<string, unknown>, path: string, defaultValue?: T): T {
   const travel = (regexp: RegExp) =>
     String.prototype.split
       .call(path, regexp)
       .filter(Boolean)
-      .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
+      .reduce((res: Record<string, unknown> | unknown, key: string) => {
+        if (res && typeof res === 'object') {
+          return (res as Record<string, unknown>)[key];
+        }
+        return undefined;
+      }, obj);
   const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
   return (result === undefined || result === null ? defaultValue : result) as T;
 }

@@ -1,38 +1,87 @@
-# sales-inventory-tracker
-App to track sales and inventory for retailers along with AI insights to opimise sales and inventory
-=======
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+# Sales Inventory Tracker
+
+A Next.js application for tracking sales and inventory with AI-powered insights.
+
+## Features
+
+- **Authentication**
+  - Email/Password login with validation
+  - Google OAuth integration
+  - Password reset functionality
+  - Magic link authentication
+  - Sign up with email verification
+
+- **UI Components**
+  - Shadcn/ui components
+  - Custom chart components
+  - Responsive navigation
+  - Toast notifications
+  - Form validation with Zod
+
+- **Tech Stack**
+  - Next.js 15 with App Router
+  - TypeScript
+  - Tailwind CSS
+  - Supabase Auth & Database
+  - React Hook Form
+  - Zod Validation
+  - Zustand State Management
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone and install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up environment variables:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_AUTH_REDIRECT_URL=your_auth_redirect_url
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run test` - Run Jest tests
+- `npm run type-check` - Check TypeScript types
+- `npm run storybook` - Start Storybook dev server
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/          # Next.js app router pages
+├── components/   # Shared UI components
+├── features/     # Feature modules (auth, sales, etc)
+├── lib/          # Utilities and shared logic
+├── styles/       # Global styles
+└── db/          # Database configuration
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Testing
 
-## Deploy on Vercel
+- Unit tests with Jest and React Testing Library
+- E2E tests with Playwright
+- Component stories with Storybook
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
+1. Create a feature branch
+2. Make changes and test
+3. Run `npm run ci` to verify all checks pass
+4. Submit a pull request
+
+## License
+
+MIT

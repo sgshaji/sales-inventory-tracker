@@ -1,1 +1,9 @@
-.next/ 
+
+.next/
+node_modules/
+coverage/
+build/
+dist/
+*.d.ts
+public/
+attached_assets/

@@ -1,6 +1,10 @@
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { Providers } from '@/components/providers';
 import '@/styles/globals.css';
+
+export const metadata = {
+  title: 'Authentication - Your App',
+  description: 'Authentication system for your application',
+};
 
 export default function RootLayout({
   children,
@@ -9,14 +13,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>Authentication - Your App</title>
-      </head>
-      <body>
-        <ThemeProvider defaultTheme="light" storageKey="auth-theme">
-          {children}
-          <Toaster />
-        </ThemeProvider>
+      <body suppressHydrationWarning>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+// File: src/features/auth/pages/forgot-password/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -18,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { AuthCard, AuthLogo } from '@/features/auth';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -31,22 +33,34 @@ export default function ForgotPasswordPage() {
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
+    defaultValues: { email: '' },
   });
 
-  function onSubmit(data: ForgotPasswordFormValues) {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     setIsLoading(true);
-    setTimeout(() => {
-      console.log(data);
-      setIsLoading(false);
+    console.log('🧪 resetPasswordForEmail payload:', data);
+
+    // Correct call signature for Supabase v2: pass email string first, options second
+    const { data: res, error } = await supabase.auth.resetPasswordForEmail(
+      data.email,
+      { redirectTo: `${window.location.origin}/reset-password` }
+    );
+
+    console.log('🧪 resetPasswordForEmail response:', { res, error });
+
+    if (error) {
+      toast.error('Error sending reset email', {
+        description: error.message,
+      });
+    } else {
       setIsSuccess(true);
       toast.success('Reset link sent', {
         description: 'Please check your email for the password reset link.',
       });
-    }, 2000);
-  }
+    }
+
+    setIsLoading(false);
+  };
 
   if (isSuccess) {
     return (
@@ -114,7 +128,7 @@ export default function ForgotPasswordPage() {
                 </FormItem>
               )}
             />
-            
+
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? (
                 <>

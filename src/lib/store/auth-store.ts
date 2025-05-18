@@ -1,9 +1,10 @@
+// File: src/lib/store/auth-store.ts
 import { create } from 'zustand';
 
 interface User {
   id: string;
   name?: string;
-  email: string;
+  email?: string;   // now optional
 }
 
 interface AuthState {

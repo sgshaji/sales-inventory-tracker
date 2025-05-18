@@ -1,4 +1,4 @@
-// File: src/features/auth/pages/login/page.tsx
+// File: src/auth/pages/login/page.tsx
 'use client'
 export const dynamic = 'force-dynamic';
 

@@ -1,4 +1,6 @@
 // File: src/app/(auth)/signup/page.tsx
+
+export const dynamic = 'force-dynamic';
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -6,7 +8,7 @@ import { AuthCard } from '@/features/auth';
 import { SignUpForm } from '@/features/auth/components/signup-form';
 import { SocialAuth } from '@/features/auth/components/social-auth';
 import { useToast } from '@/hooks/use-toast';
-export const dynamic = 'force-dynamic';
+
 
 export default function SignupPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);

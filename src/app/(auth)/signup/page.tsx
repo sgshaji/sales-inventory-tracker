@@ -1,7 +1,7 @@
 // File: src/app/(auth)/signup/page.tsx
 
-export const dynamic = 'force-dynamic';
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useState, useCallback } from 'react';
 import { AuthCard } from '@/features/auth';

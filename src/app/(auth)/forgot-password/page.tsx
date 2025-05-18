@@ -1,20 +1,21 @@
 'use client';
+// Disable Next.js Static Generation for this page
 export const dynamic = 'force-dynamic';
 
-import dynamic from 'next/dynamic';
+import React from 'react';
+import dynamicImport from 'next/dynamic';
 
-const ForgotPasswordContent = dynamic(
-  () => import('@/features/auth/pages/forgot-password/page'),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-      </div>
-    )
-  }
+// Dynamically load the forgot-password form component on the client
+const ForgotPasswordForm = dynamicImport(
+  () => import('@/features/auth/components/forgot-password-form'),
+  { ssr: false }
 );
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordContent />;
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Reset Your Password</h1>
+      <ForgotPasswordForm />
+    </div>
+  );
 }

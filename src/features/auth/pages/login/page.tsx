@@ -1,87 +1,123 @@
+// File: src/features/auth/components/login-form.tsx
 'use client';
 
-import { useState, useCallback } from 'react';
-import Link from 'next/link';
-import { AuthCard, AuthDivider, AuthLogo } from '@/features/auth';
-import { LoginForm } from '@/features/auth/components/login-form';
-import { SocialAuth } from '@/features/auth/components/social-auth';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Mail, KeyRound, Loader2 } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuthStore } from '@/lib/store/auth-store';
+import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-export default function Login() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
+export function LoginForm() {
+  const router = useRouter();
+  const { setUser } = useAuthStore();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = useCallback((data: { email: string; password: string }) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log(data);
-      setIsLoading(false);
-      toast.success('Success', {
-        description: 'You have successfully signed in!',
-      });
-    }, 2000);
-  }, []);
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+    mode: 'onChange',
+  });
 
-  const handleGoogleSignIn = useCallback(() => {
-    setIsGoogleLoading(true);
-    setTimeout(() => {
-      setIsGoogleLoading(false);
-      toast.success('Success', {
-        description: 'You have successfully signed in with Google!',
-      });
-    }, 2000);
-  }, []);
+  const onSubmit = async (data: LoginFormValues) => {
+    setLoading(true);
+    const { data: sessionData, error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
 
-  const handleMagicLink = useCallback(() => {
-    setIsMagicLinkLoading(true);
-    setTimeout(() => {
-      setIsMagicLinkLoading(false);
-      toast.success('Magic Link Sent', {
-        description: 'Please check your email for the magic link.',
-      });
-    }, 2000);
-  }, []);
+    if (error) {
+      if (error.message.toLowerCase().includes('confirm')) {
+        toast.error('Please confirm your email before logging in.');
+      } else {
+        toast.error(`Login failed: ${error.message}`);
+      }
+      setLoading(false);
+      return;
+    }
+
+    const user = sessionData.session?.user;
+    if (user) {
+      setUser(user);
+      router.push('/dashboard');
+    } else {
+      toast.error('Login failed: no user session created.');
+    }
+
+    setLoading(false);
+  };
 
   return (
-    <AuthCard>
-      <div className="space-y-6">
-        <AuthLogo />
-
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">
-            Sign in to your account to continue
-          </p>
-        </div>
-
-        <SocialAuth
-          onGoogleSignIn={handleGoogleSignIn}
-          onMagicLink={handleMagicLink}
-          isGoogleLoading={isGoogleLoading}
-          isMagicLinkLoading={isMagicLinkLoading}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="name@example.com"
+                    className="pl-10"
+                    type="email"
+                    autoComplete="email"
+                    autoFocus
+                  />
+                </FormControl>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        <AuthDivider />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <div className="relative">
+                <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Enter your password"
+                    className="pl-10"
+                    type="password"
+                    autoComplete="current-password"
+                  />
+                </FormControl>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
-
-        <div className="text-center text-sm">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-[#3E6AE1] hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        <div className="text-center text-sm">
-          <span className="text-muted-foreground">New here? </span>
-          <Link href="/signup" className="text-sm text-[#3E6AE1] hover:underline">
-            Create account
-          </Link>
-        </div>
-      </div>
-    </AuthCard>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={loading || form.formState.isSubmitting}
+        >
+          {loading || form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            'Sign in'
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }
